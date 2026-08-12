@@ -498,7 +498,7 @@ body.loaded .hero-chips{animation:up .8s .54s ease forwards}
         <div class="tag">Turnos online</div>
         <h2>Reservá tu turno, elegís el día y el horario</h2>
         <p>Completás los datos, elegís si es consulta contable o clase particular, y te confirmo por WhatsApp. Sin complicaciones.</p>
-        <div class="td"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Lunes a viernes — 9 a 12 hs y 14 a 18 hs</div>
+        <div class="td"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Lunes a viernes — Mañana: 9 a 12 hs (online) · Tarde: 18 a 22 hs</div>
         <div class="td"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Barrio Rincón, La Banda · También disponible online</div>
         <div class="td"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.12 1.2 2 2 0 012.11 0h3a2 2 0 012 1.72.19 19.4 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45 19.4 19.4 0 002.81.7A2 2 0 0122 14.92z"/></svg>Confirmación inmediata por WhatsApp</div>
       </div>
@@ -512,29 +512,34 @@ body.loaded .hero-chips{animation:up .8s .54s ease forwards}
           <button class="mbtn act" data-m="Consulta contable">Consulta contable</button>
           <button class="mbtn" data-m="Clase particular">Clase particular</button>
         </div>
+        <label class="tf-lbl">Franja horaria</label>
+        <div class="mod-btns" style="margin-bottom:20px">
+          <button class="mbtn act" data-turno="Mañana">Mañana</button>
+          <button class="mbtn" data-turno="Tarde">Tarde</button>
+        </div>
         <label class="tf-lbl">Modalidad</label>
         <div class="mod-btns" style="margin-bottom:20px">
-          <button class="mbtn act" data-m2="Presencial">Presencial</button>
-          <button class="mbtn" data-m2="Online">Online</button>
+          <button class="mbtn" data-m2="Presencial" style="display:none">Presencial</button>
+          <button class="mbtn act" data-m2="Online">Online</button>
         </div>
-        <label class="tf-lbl">Elegí el día</label>
-        <div class="dias">
-          <button class="dia" data-d="Lunes">Lun</button>
-          <button class="dia" data-d="Martes">Mar</button>
-          <button class="dia" data-d="Miércoles">Mié</button>
-          <button class="dia" data-d="Jueves">Jue</button>
-          <button class="dia" data-d="Viernes">Vie</button>
+        <div id="tfManana">
+          <label class="tf-lbl">Elegí el día</label>
+          <div class="dias">
+            <button class="dia" data-d="Lunes">Lun</button>
+            <button class="dia" data-d="Martes">Mar</button>
+            <button class="dia" data-d="Miércoles">Mié</button>
+            <button class="dia" data-d="Jueves">Jue</button>
+            <button class="dia" data-d="Viernes">Vie</button>
+          </div>
+          <label class="tf-lbl">Horario disponible</label>
+          <div class="slots">
+            <button class="slot" data-h="9:00">9:00</button>
+            <button class="slot taken" data-h="10:00">10:00</button>
+            <button class="slot" data-h="11:00">11:00</button>
+          </div>
         </div>
-        <label class="tf-lbl">Horario disponible</label>
-        <div class="slots">
-          <button class="slot" data-h="9:00">9:00</button>
-          <button class="slot taken" data-h="10:00">10:00</button>
-          <button class="slot" data-h="11:00">11:00</button>
-          <button class="slot" data-h="14:00">14:00</button>
-          <button class="slot" data-h="15:00">15:00</button>
-          <button class="slot taken" data-h="16:00">16:00</button>
-          <button class="slot" data-h="17:00">17:00</button>
-          <button class="slot" data-h="18:00">18:00</button>
+        <div id="tfTarde" style="display:none">
+          <p class="tf-note" style="margin:0 0 20px">🌆 Turno tarde (18 a 22 hs): coordinamos el día y el horario exacto por WhatsApp según tu disponibilidad.</p>
         </div>
         <label class="tf-lbl">Tu nombre</label>
         <input class="tf-inp" id="tfNombre" type="text" placeholder="Nombre y apellido" autocomplete="name">
@@ -648,11 +653,13 @@ document.querySelectorAll('.nivel-pill').forEach(p=>p.addEventListener('click',(
 }));
 
 // TURNO FORM
-let selTipo='Consulta contable',selMod='Presencial',selDia='',selHora='';
+let selTipo='Consulta contable',selMod='Online',selDia='',selHora='',selTurno='Mañana';
 document.querySelectorAll('.mbtn[data-m]').forEach(b=>b.addEventListener('click',()=>{
   b.parentElement.querySelectorAll('.mbtn[data-m]').forEach(x=>x.classList.remove('act'));
   b.classList.add('act'); selTipo=b.dataset.m;
 }));
+const btnPresencial=document.querySelector('.mbtn[data-m2="Presencial"]');
+const btnOnline=document.querySelector('.mbtn[data-m2="Online"]');
 document.querySelectorAll('.mbtn[data-m2]').forEach(b=>b.addEventListener('click',()=>{
   b.parentElement.querySelectorAll('.mbtn[data-m2]').forEach(x=>x.classList.remove('act'));
   b.classList.add('act'); selMod=b.dataset.m2;
@@ -665,22 +672,45 @@ document.querySelectorAll('.slot:not(.taken)').forEach(b=>b.addEventListener('cl
   document.querySelectorAll('.slot').forEach(x=>x.classList.remove('sel'));
   b.classList.add('sel'); selHora=b.dataset.h;
 }));
+// FRANJA HORARIA (Mañana = online, día y horario fijo · Tarde 18 a 22hs = a coordinar por WhatsApp)
+const tfManana=document.getElementById('tfManana'), tfTarde=document.getElementById('tfTarde');
+function setTurno(turno){
+  selTurno=turno;
+  document.querySelectorAll('.mbtn[data-turno]').forEach(x=>x.classList.toggle('act',x.dataset.turno===turno));
+  if(turno==='Mañana'){
+    tfManana.style.display=''; tfTarde.style.display='none';
+    btnPresencial.style.display='none';
+    selMod='Online'; btnOnline.classList.add('act'); btnPresencial.classList.remove('act');
+  }else{
+    tfManana.style.display='none'; tfTarde.style.display='';
+    btnPresencial.style.display='';
+    selDia=''; selHora='';
+    document.querySelectorAll('.dia').forEach(x=>x.classList.remove('sel'));
+    document.querySelectorAll('.slot').forEach(x=>x.classList.remove('sel'));
+  }
+}
+document.querySelectorAll('.mbtn[data-turno]').forEach(b=>b.addEventListener('click',()=>setTurno(b.dataset.turno)));
 document.getElementById('tfConfirm').addEventListener('click',()=>{
   const nombre=document.getElementById('tfNombre').value.trim();
   const motivo=document.getElementById('tfMotivo').value.trim();
-  if(!selDia){alert('Por favor elegí un día.');return;}
-  if(!selHora){alert('Por favor elegí un horario.');return;}
+  if(selTurno==='Mañana'){
+    if(!selDia){alert('Por favor elegí un día.');return;}
+    if(!selHora){alert('Por favor elegí un horario.');return;}
+  }
   if(!nombre){alert('Por favor ingresá tu nombre.');return;}
+  const franja = selTurno==='Mañana'
+    ? `📅 Día: ${selDia}\n🕐 Horario: ${selHora} hs`
+    : `🌆 Franja: Tarde (18 a 22 hs) — a coordinar día y horario`;
+  const cierre = selTurno==='Mañana' ? '¿Está disponible ese horario?' : '¿Qué día y horario tenés disponible?';
   const msg=`Hola Carla! 👋 Me gustaría reservar un turno:
 
 📋 Tipo: ${selTipo}
-📅 Día: ${selDia}
-🕐 Horario: ${selHora} hs
+${franja}
 🏠 Modalidad: ${selMod}
 📝 Motivo: ${motivo||'Consulta general'}
 👤 Nombre: ${nombre}
 
-¿Está disponible ese horario?`;
+${cierre}`;
   window.open('https://wa.me/5493855162303?text='+encodeURIComponent(msg),'_blank');
 });
 </script>
